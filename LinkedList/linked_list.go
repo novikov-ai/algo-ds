@@ -1,9 +1,9 @@
 package main
 
 import (
+	"errors"
 	"os"
 	"reflect"
-	"errors"
 )
 
 type Node struct {
@@ -67,7 +67,6 @@ func (l *LinkedList) FindAll(n int) []Node {
 func (l *LinkedList) Delete(n int, all bool) {
 	var current, prev *Node
 	current = l.head
-
 	for current != nil {
 		if current.value == n {
 			if l.Count() == 1 {
@@ -84,9 +83,13 @@ func (l *LinkedList) Delete(n int, all bool) {
 				prev.next = current.next
 			}
 
+			current = current.next
+
 			if !all {
 				return
 			}
+
+			continue
 		}
 
 		prev = current

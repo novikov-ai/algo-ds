@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/stretchr/testify/require"
 )
 
@@ -99,16 +101,48 @@ func TestDelete(t *testing.T) {
 		nodesLeft   int
 		headValue   int
 		tailValue   int
+		leftValues  []int
 	}{
-		{title: "empty list", list: LinkedList{}, removeValue: 3, removeAll: true, nodesLeft: 0},
-		{title: "delete the only node", list: getLinkedList([]int{3}), removeValue: 3, removeAll: true, nodesLeft: 0},
-		{title: "delete not existing node", list: getLinkedList([]int{3}), removeValue: 1, removeAll: true, nodesLeft: 1, headValue: 3, tailValue: 3},
-		{title: "delete head", list: getLinkedList([]int{3, 4}), removeValue: 3, removeAll: true, nodesLeft: 1, headValue: 4, tailValue: 4},
-		{title: "delete tail", list: getLinkedList([]int{3, 4}), removeValue: 4, removeAll: true, nodesLeft: 1, headValue: 3, tailValue: 3},
-		{title: "delete middle", list: getLinkedList([]int{3, 4, 5}), removeValue: 4, removeAll: true, nodesLeft: 2, headValue: 3, tailValue: 5},
-		{title: "delete only 1 matching value", list: getLinkedList([]int{3, 1, 2, 3, 4, 5, 3}), removeValue: 3, removeAll: false, nodesLeft: 6, headValue: 1, tailValue: 3},
-		{title: "delete all matching values", list: getLinkedList([]int{3, 1, 2, 3, 4, 5, 3}), removeValue: 3, removeAll: true, nodesLeft: 4, headValue: 1, tailValue: 5},
-		{title: "list with all matching values", list: getLinkedList([]int{3, 3, 3}), removeValue: 3, removeAll: true, nodesLeft: 0},
+		{
+			title: "empty list", list: LinkedList{},
+			removeValue: 3, removeAll: true, nodesLeft: 0, leftValues: []int{},
+		},
+		{
+			title: "delete the only node", list: getLinkedList([]int{3}),
+			removeValue: 3, removeAll: true, nodesLeft: 0, leftValues: []int{},
+		},
+		{
+			title: "delete not existing node", list: getLinkedList([]int{3}),
+			removeValue: 1, removeAll: true, nodesLeft: 1, headValue: 3, tailValue: 3, leftValues: []int{3},
+		},
+		{
+			title: "delete head", list: getLinkedList([]int{3, 4}),
+			removeValue: 3, removeAll: true, nodesLeft: 1, headValue: 4, tailValue: 4, leftValues: []int{4},
+		},
+		{
+			title: "delete tail", list: getLinkedList([]int{3, 4}),
+			removeValue: 4, removeAll: true, nodesLeft: 1, headValue: 3, tailValue: 3, leftValues: []int{3},
+		},
+		{
+			title: "delete middle", list: getLinkedList([]int{3, 4, 5}),
+			removeValue: 4, removeAll: true, nodesLeft: 2, headValue: 3, tailValue: 5, leftValues: []int{3, 5},
+		},
+		{
+			title: "delete only 1 matching value", list: getLinkedList([]int{3, 1, 2, 3, 4, 5, 3}),
+			removeValue: 3, removeAll: false, nodesLeft: 6, headValue: 1, tailValue: 3, leftValues: []int{1, 2, 3, 4, 5, 3},
+		},
+		{
+			title: "delete all matching values", list: getLinkedList([]int{3, 1, 2, 3, 4, 5, 3}),
+			removeValue: 3, removeAll: true, nodesLeft: 4, headValue: 1, tailValue: 5, leftValues: []int{1, 2, 4, 5},
+		},
+		{
+			title: "delete all matching values (left one)", list: getLinkedList([]int{3, 3, 3, 3, 4, 3, 3}),
+			removeValue: 3, removeAll: true, nodesLeft: 1, headValue: 4, tailValue: 4, leftValues: []int{4},
+		},
+		{
+			title: "list with all matching values", list: getLinkedList([]int{3, 3, 3}),
+			removeValue: 3, removeAll: true, nodesLeft: 0, leftValues: []int{},
+		},
 	}
 
 	for _, test := range testCases {
@@ -119,6 +153,14 @@ func TestDelete(t *testing.T) {
 			if test.list.Count() != 0 {
 				require.Equal(t, test.headValue, test.list.head.value)
 				require.Equal(t, test.tailValue, test.list.tail.value)
+			}
+
+			currentNode := test.list.head
+			index := 0
+			for currentNode != nil {
+				assert.Equal(t, test.leftValues[index], currentNode.value)
+				currentNode = currentNode.next
+				index++
 			}
 		})
 	}
@@ -133,19 +175,35 @@ func TestInsert(t *testing.T) {
 	}
 
 	testCases := []struct {
-		title      string
-		list       LinkedList
-		nodeAfter  *Node
-		nodeInsert Node
-		headValue  int
-		tailValue  int
-		countAfter int
+		title       string
+		list        LinkedList
+		nodeAfter   *Node
+		nodeInsert  Node
+		headValue   int
+		tailValue   int
+		countAfter  int
+		valuesOrder []int
 	}{
-		{title: "empty list", list: LinkedList{}, nodeAfter: &Node{value: 15}, nodeInsert: Node{value: 1}, headValue: 1, tailValue: 1, countAfter: 1},
-		{title: "insert first", list: linkedLists[0], nodeAfter: &Node{value: 15}, nodeInsert: Node{value: 0}, headValue: 0, tailValue: 2, countAfter: 3},
-		{title: "insert after head", list: linkedLists[1], nodeAfter: linkedLists[1].head, nodeInsert: Node{value: 0}, headValue: 1, tailValue: 2, countAfter: 3},
-		{title: "insert after tail", list: linkedLists[2], nodeAfter: linkedLists[2].tail, nodeInsert: Node{value: 0}, headValue: 1, tailValue: 0, countAfter: 3},
-		{title: "insert into middle", list: linkedLists[3], nodeAfter: linkedLists[3].head.next, nodeInsert: Node{value: 3}, headValue: 1, tailValue: 5, countAfter: 5},
+		{
+			title: "empty list", list: LinkedList{},
+			nodeAfter: &Node{value: 15}, nodeInsert: Node{value: 1}, headValue: 1, tailValue: 1, countAfter: 1, valuesOrder: []int{1},
+		},
+		{
+			title: "insert first", list: linkedLists[0],
+			nodeAfter: &Node{value: 15}, nodeInsert: Node{value: 0}, headValue: 0, tailValue: 2, countAfter: 3, valuesOrder: []int{0, 1, 2},
+		},
+		{
+			title: "insert after head", list: linkedLists[1],
+			nodeAfter: linkedLists[1].head, nodeInsert: Node{value: 0}, headValue: 1, tailValue: 2, countAfter: 3, valuesOrder: []int{1, 0, 2},
+		},
+		{
+			title: "insert after tail", list: linkedLists[2],
+			nodeAfter: linkedLists[2].tail, nodeInsert: Node{value: 0}, headValue: 1, tailValue: 0, countAfter: 3, valuesOrder: []int{1, 2, 0},
+		},
+		{
+			title: "insert into middle", list: linkedLists[3],
+			nodeAfter: linkedLists[3].head.next, nodeInsert: Node{value: 3}, headValue: 1, tailValue: 5, countAfter: 5, valuesOrder: []int{1, 2, 3, 4, 5},
+		},
 	}
 
 	for _, test := range testCases {
@@ -156,6 +214,14 @@ func TestInsert(t *testing.T) {
 			if test.list.Count() != 0 {
 				require.Equal(t, test.headValue, test.list.head.value)
 				require.Equal(t, test.tailValue, test.list.tail.value)
+			}
+
+			currentNode := test.list.head
+			index := 0
+			for currentNode != nil {
+				assert.Equal(t, test.valuesOrder[index], currentNode.value)
+				currentNode = currentNode.next
+				index++
 			}
 		})
 	}
