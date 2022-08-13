@@ -283,6 +283,11 @@ func getLinkedList(values []int) LinkedList2 {
 func checkForwardRelations(t *testing.T, list LinkedList2, correctOrder []int) {
 	t.Helper()
 
+	if list.Count() == 0 {
+		require.Equal(t, len(correctOrder), 0)
+		return
+	}
+
 	currentNode := list.head
 	index := 0
 	for currentNode != nil {
@@ -295,11 +300,16 @@ func checkForwardRelations(t *testing.T, list LinkedList2, correctOrder []int) {
 func checkBackwardRelations(t *testing.T, list LinkedList2, correctOrder []int) {
 	t.Helper()
 
+	if list.Count() == 0 {
+		require.Equal(t, len(correctOrder), 0)
+		return
+	}
+
 	currentNode := list.tail
 	index := list.Count() - 1
 	for currentNode != nil {
 		assert.Equal(t, correctOrder[index], currentNode.value)
-		currentNode = currentNode.next
+		currentNode = currentNode.prev
 		index--
 	}
 }
