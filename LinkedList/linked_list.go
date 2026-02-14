@@ -131,3 +131,5 @@ func (l *LinkedList) Clean() {
 	l.head = nil
 	l.tail = nil
 }
+
+

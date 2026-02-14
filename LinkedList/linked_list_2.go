@@ -40,3 +40,5 @@ func CombineLists(l1, l2 LinkedList) LinkedList {
 
 	return result
 }
+
+
