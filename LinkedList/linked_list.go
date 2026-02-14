@@ -27,15 +27,14 @@ func (l *LinkedList) AddInTail(item Node) {
 }
 
 func (l *LinkedList) Count() int {
-	current := l.head
-	count := 0
-
-	for current != nil {
-		count++
-		current = current.next
+	sum := 0
+	node := l.head
+	for node != nil {
+		sum++
+		node = node.next
 	}
 
-	return count
+	return sum
 }
 
 func (l *LinkedList) Find(n int) (Node, error) {
@@ -47,7 +46,7 @@ func (l *LinkedList) Find(n int) (Node, error) {
 		current = current.next
 	}
 
-	return Node{value: -1, next: nil}, errors.New("node was not found")
+	return Node{value: -1, next: nil}, errors.New("not found")
 }
 
 func (l *LinkedList) FindAll(n int) []Node {
@@ -65,57 +64,52 @@ func (l *LinkedList) FindAll(n int) []Node {
 }
 
 func (l *LinkedList) Delete(n int, all bool) {
-	var current, prev *Node
-	current = l.head
+	current := l.head
+	var prev *Node = nil
+
 	for current != nil {
-		if current.value == n {
-			if l.Count() == 1 {
-				l.Clean()
-				return
-			}
-
-			if current == l.head {
-				l.head = current.next
-			} else if current == l.tail {
-				prev.next = nil
-				l.tail = prev
-			} else {
-				prev.next = current.next
-			}
-
+		if current.value != n {
+			prev = current
 			current = current.next
-
-			if !all {
-				return
-			}
-
 			continue
 		}
 
-		prev = current
+		switch current {
+		case l.head:
+			l.head = current.next
+		case l.tail:
+			prev.next = nil
+			l.tail = prev
+		default:
+			prev.next = current.next
+		}
+
+		if !all {
+			return
+		}
+
 		current = current.next
 	}
 }
 
+// pre-conditions: after Node exists
 func (l *LinkedList) Insert(after *Node, add Node) {
-	_, err := l.Find(after.value)
-	if err != nil {
-		l.InsertFirst(add)
+	if l.head == nil {
+		l.head = &add
+		l.tail = &add
 		return
 	}
 
 	current := l.head
 	for current != nil {
 		if current == after {
-			cache := current.next
+			add.next = current.next
+			after.next = &add
 
-			current.next = &add
-			add.next = cache
-
-			if l.tail == current {
+			if current == l.tail {
 				l.tail = &add
-				return
 			}
+			return
 		}
 
 		current = current.next
@@ -123,7 +117,7 @@ func (l *LinkedList) Insert(after *Node, add Node) {
 }
 
 func (l *LinkedList) InsertFirst(first Node) {
-	if l.Count() == 0 {
+	if l.head == nil {
 		l.head = &first
 		l.tail = &first
 		return
@@ -134,10 +128,6 @@ func (l *LinkedList) InsertFirst(first Node) {
 }
 
 func (l *LinkedList) Clean() {
-	if l.Count() > 0 {
-		l.head.next = nil
-	}
-
 	l.head = nil
 	l.tail = nil
 }
