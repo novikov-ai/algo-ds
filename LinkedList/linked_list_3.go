@@ -153,6 +153,8 @@ func TestDelete(t *testing.T) {
 			if test.list.Count() != 0 {
 				require.Equal(t, test.headValue, test.list.head.value)
 				require.Equal(t, test.tailValue, test.list.tail.value)
+			} else {
+				require.Equal(t, test.list, LinkedList{})
 			}
 
 			currentNode := test.list.head

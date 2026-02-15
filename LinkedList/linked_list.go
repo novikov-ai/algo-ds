@@ -77,6 +77,9 @@ func (l *LinkedList) Delete(n int, all bool) {
 		switch current {
 		case l.head:
 			l.head = current.next
+			if l.head == nil {
+				l.tail = nil
+			}
 		case l.tail:
 			prev.next = nil
 			l.tail = prev
