@@ -32,14 +32,12 @@ func (l *LinkedList2) AddInTail(item Node) {
 }
 
 func (l *LinkedList2) Count() int {
-	count := 0
 	current := l.head
-
+	count := 0
 	for current != nil {
 		count++
 		current = current.next
 	}
-
 	return count
 }
 
@@ -52,12 +50,11 @@ func (l *LinkedList2) Find(n int) (Node, error) {
 		current = current.next
 	}
 
-	return Node{value: -1, next: nil}, errors.New("node was not found")
+	return Node{value: -1}, errors.New("not found")
 }
 
 func (l *LinkedList2) FindAll(n int) []Node {
 	var nodes []Node
-
 	current := l.head
 	for current != nil {
 		if current.value == n {
@@ -65,53 +62,47 @@ func (l *LinkedList2) FindAll(n int) []Node {
 		}
 		current = current.next
 	}
-
 	return nodes
 }
 
 func (l *LinkedList2) Delete(n int, all bool) {
-	_, err := l.Find(n)
-	if err != nil {
-		return
-	}
-
 	current := l.head
 	for current != nil {
-		if current.value != n {
-			current = current.next
-			continue
-		}
+		if current.value == n {
+			if current != l.head && current != l.tail {
+				current.prev.next = current.next
+				current.next.prev = current.prev
+			}
 
-		if current == l.head && current == l.tail {
-			l.Clean()
-			return
-		}
+			if current == l.head {
+				l.head = current.next
+				if current.next == nil {
+					return
+				}
+				current.next.prev = nil
+			}
 
-		if current == l.head {
-			next := current.next
-			next.prev = nil
-			l.head = next
-		} else if current == l.tail {
-			prev := current.prev
-			prev.next = nil
-			l.tail = prev
-		} else {
-			prev := current.prev
-			next := current.next
+			if current == l.tail {
+				l.tail = current.prev
+				current.prev.next = nil
+			}
 
-			prev.next = next
-			next.prev = prev
+			if !all {
+				return
+			}
 		}
 
 		current = current.next
-
-		if !all {
-			return
-		}
 	}
 }
 
 func (l *LinkedList2) Insert(after *Node, add Node) {
+	if l.head == nil {
+		l.head = &add
+		l.tail = &add
+		return
+	}
+
 	current := l.head
 	for current != nil {
 		if current != after {
@@ -120,11 +111,9 @@ func (l *LinkedList2) Insert(after *Node, add Node) {
 		}
 
 		if current == l.tail {
-			current.next = &add
-			add.prev = current
-
+			l.tail.next = &add
+			add.prev = l.tail
 			l.tail = &add
-
 		} else {
 			current.next.prev = &add
 			add.next = current.next
@@ -132,11 +121,23 @@ func (l *LinkedList2) Insert(after *Node, add Node) {
 			current.next = &add
 			add.prev = current
 		}
-
 		return
 	}
 
-	l.InsertFirst(add)
+	if l.head == nil {
+		l.head = &add
+		l.tail = &add
+		return
+	}
+
+	if l.tail == nil {
+		l.tail = l.head
+	}
+
+	add.next = l.head
+	l.head.prev = &add
+
+	l.head = &add
 }
 
 func (l *LinkedList2) InsertFirst(first Node) {
@@ -146,21 +147,17 @@ func (l *LinkedList2) InsertFirst(first Node) {
 		return
 	}
 
-	currentHead := l.head
-	currentHead.prev = &first
+	if l.tail == nil {
+		l.tail = l.head
+	}
 
-	first.next = currentHead
+	first.next = l.head
+	l.head.prev = &first
+
 	l.head = &first
 }
 
 func (l *LinkedList2) Clean() {
-	if l.head != nil {
-		l.head.next = nil
-	}
 	l.head = nil
-
-	if l.tail != nil {
-		l.tail.prev = nil
-	}
 	l.tail = nil
 }
