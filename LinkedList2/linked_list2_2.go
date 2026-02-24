@@ -60,6 +60,13 @@ func IsCycled(l LinkedList2) bool {
 #2 Двунаправленный связанный список
 #11 Метод, сортирующий список
 
+Сложность пространственная O(n)
+Сложность временная: O(n*log(n))
+
+Рефлексия к задаче #10:
+	Худший случай происходит в сортировке на 82 строке, и это является теоретически лучшим сценарием, 
+	поэтому из возможных оптимизаций можно попробовать только уменьшить сложность по памяти, 
+	переиспользуя существующие структуры данных.
 */
 
 type SortBy []Node
@@ -72,6 +79,7 @@ func Sort(l LinkedList2) LinkedList2 {
 	unsorted := []Node{}
 
 	current := l.head
+	// O(n)
 	for current != nil {
 		unsorted = append(unsorted, *current)
 		current = current.next
@@ -81,17 +89,15 @@ func Sort(l LinkedList2) LinkedList2 {
 		return l
 	}
 
+	// O(n*log(n))
 	sort.Sort(SortBy(unsorted))
 
 	sorted := LinkedList2{}
 
-	current = &unsorted[0]
+	// O(n)
 	for i := range unsorted {
 		sorted.InsertFirst(unsorted[i])
 	}
-
-	sorted.head.prev = nil
-	sorted.tail.next = nil
 
 	return sorted
 }
