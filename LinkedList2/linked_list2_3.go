@@ -160,6 +160,10 @@ func TestDelete(t *testing.T) {
 			if test.list.Count() != 0 {
 				require.Equal(t, test.headValue, test.list.head.value)
 				require.Equal(t, test.tailValue, test.list.tail.value)
+			} else {
+				var emptyNode *Node
+				require.Equal(t, emptyNode, test.list.head)
+				require.Equal(t, emptyNode, test.list.tail)
 			}
 
 			checkForwardRelations(t, test.list, test.leftValues)
