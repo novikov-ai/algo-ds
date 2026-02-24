@@ -2,6 +2,7 @@ package main
 
 import(
 	"errors"
+	"sort"
 )
 
 /* META
@@ -32,17 +33,68 @@ func Reverse(l LinkedList2) LinkedList2 {
 #2 Двунаправленный связанный список
 #10 Булев метод, который сообщает, имеются ли циклы (замкнутые на себя по кругу) внутри списка.
 
-<<< WIP >>>
+Сложность пространственная O(1)
+Сложность временная: O(n)
 
+Рефлексия к задаче #10:
+	В среднем временная сложность O(n), так как нужен перебор всех элементов списка,
+	но также может быть и O(1), если будем находить цикл при первой же итерации.
 */
+
+func IsCycled(l LinkedList2) bool {
+	current := l.head
+	var prev *Node = nil
+	for current != nil {
+		if prev != nil && current == prev {
+			return true
+		}
+
+		prev = current
+		current = current.next
+	}
+
+	return false
+}
 
 /* META
 #2 Двунаправленный связанный список
 #11 Метод, сортирующий список
 
-<<< WIP >>>
-
 */
+
+type SortBy []Node
+
+func (a SortBy) Len() int           { return len(a) }
+func (a SortBy) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a SortBy) Less(i, j int) bool { return a[i].value > a[j].value }
+
+func Sort(l LinkedList2) LinkedList2 {
+	unsorted := []Node{}
+
+	current := l.head
+	for current != nil {
+		unsorted = append(unsorted, *current)
+		current = current.next
+	}
+
+	if len(unsorted) == 0 {
+		return l
+	}
+
+	sort.Sort(SortBy(unsorted))
+
+	sorted := LinkedList2{}
+
+	current = &unsorted[0]
+	for i := range unsorted {
+		sorted.InsertFirst(unsorted[i])
+	}
+
+	sorted.head.prev = nil
+	sorted.tail.next = nil
+
+	return sorted
+}
 
 /* META
 #2 Двунаправленный связанный список
