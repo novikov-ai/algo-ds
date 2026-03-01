@@ -25,6 +25,9 @@ func (da *DynArray[T]) MakeArray(sz int) {
 	da.array = arr
 }
 
+// Insert
+// Сложность по времени: O(n) за счет `copy`
+// Сложность по памяти: O(n) за счет `MakeArray`, если есть реаллокация (если нет, то O(1))
 func (da *DynArray[T]) Insert(itm T, index int) error {
 	if index < 0 || index > da.count {
 		return fmt.Errorf("bad index '%d'", index)
@@ -46,6 +49,9 @@ func (da *DynArray[T]) Insert(itm T, index int) error {
 	return nil
 }
 
+// Remove
+// Сложность по времени: O(n) за счет `copy`
+// Сложность по памяти: O(n) за счет `MakeArray`, если есть реаллокация (если нет, то O(1))
 func (da *DynArray[T]) Remove(index int) error {
 	if index < 0 || index >= da.count {
 		return fmt.Errorf("bad index '%d'", index)
@@ -53,10 +59,6 @@ func (da *DynArray[T]) Remove(index int) error {
 
 	right := da.array[index+1 : da.count]
 	shiftedLeft := da.array[index:da.count]
-
-	var zero T
-
-	da.array[index] = zero
 
 	copy(shiftedLeft, right)
 
@@ -70,21 +72,21 @@ func (da *DynArray[T]) Remove(index int) error {
 }
 
 func needShrink(count, cap int) bool {
-	const fillRate = 0.5
-	return float64(count/cap) < fillRate
+	const fillRate float64 = 0.5
+	return float64(count) / float64(cap) < fillRate
 }
 
 func (da *DynArray[T]) shrink() {
 	const minCap = 16
 
 	updated := da.capacity * 2 / 3
-	if int(updated) < minCap {
+	if updated < minCap {
 		da.capacity = minCap
 	} else {
 		da.capacity = updated
 	}
 
-	da.array = da.array[:da.capacity]
+	da.MakeArray(da.capacity)
 }
 
 func (da *DynArray[T]) Append(itm T) {
@@ -107,3 +109,4 @@ func (da *DynArray[T]) GetItem(index int) (T, error) {
 
 	return result, nil
 }
+
