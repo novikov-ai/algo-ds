@@ -94,7 +94,7 @@ func (da *DynArray[T]) Append(itm T) {
 		da.MakeArray(2 * da.capacity)
 	}
 
-	da.array = append(da.array, itm)
+	da.array[da.count] = itm
 	da.count++
 }
 
