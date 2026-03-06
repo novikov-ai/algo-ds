@@ -285,3 +285,30 @@ func TestRemove(t *testing.T) {
 		})
 	}
 }
+
+func TestAppend(t *testing.T) {
+	da := DynArray[int]{}
+	da.MakeArray(16)
+
+	for i := range da.capacity {
+		da.Append(i)
+	}
+
+	assert.Equal(t, []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}, da.array)
+	assert.Equal(t, 16, da.capacity)
+	assert.Equal(t, 16, da.count)
+
+	da2 := DynArray[int]{}
+	da2.MakeArray(16)
+
+	for i := range da2.capacity {
+		da2.array[i] = i
+	}
+	da2.count = 16
+
+	da2.Append(777)
+
+	assert.Equal(t, []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 777, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, da2.array)
+	assert.Equal(t, 32, da2.capacity)
+	assert.Equal(t, 17, da2.count)
+}
