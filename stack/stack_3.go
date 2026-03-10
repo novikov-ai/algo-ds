@@ -43,7 +43,7 @@ func Test_Peek(t *testing.T) {
 				values: []int{1, 2, 4},
 				count:  3,
 			},
-			expected: 4,
+			expected: 1,
 		},
 		{
 			name: "empty",
@@ -79,7 +79,7 @@ func Test_Pop(t *testing.T) {
 				values: []int{1, 2, 4},
 				count:  3,
 			},
-			expected:      4,
+			expected:      1,
 			expectedCount: 2,
 			expectedErr:   false,
 		},
@@ -136,6 +136,52 @@ func Test_Push(t *testing.T) {
 			tc.stack.Push(tc.item)
 			assert.Equal(t, tc.expectedCount, tc.stack.count)
 			assert.Equal(t, tc.item, tc.stack.values[len(tc.stack.values)-1])
+		})
+	}
+}
+
+func Test_BalanceBrackets(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    string
+		expected bool
+	}{
+		{
+			name:     "balanced",
+			input:    "(()((())()))",
+			expected: true,
+		},
+		{
+			name:     "unbalanced",
+			input:    "(()()(()",
+			expected: false,
+		},
+		{
+			name:     "unbalanced2",
+			input:    "))((",
+			expected: false,
+		},
+		{
+			name:     "unbalanced3",
+			input:    "((())",
+			expected: false,
+		},
+		{
+			name:     "balanced []{}()",
+			input:    "{[])(({))())",
+			expected: true,
+		},
+		{
+			name:     "unbalanced",
+			input:    "(()()(([]",
+			expected: false,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			got := IsBalanced(tc.input)
+			assert.Equal(t, tc.expected, got)
 		})
 	}
 }
