@@ -52,12 +52,10 @@ func (l *OrderedList[T]) Add(item T) {
 
 		if insertBefore {
 			if current.prev == nil {
-				// вставка перед головой
 				node.next = l.head
 				l.head.prev = node
 				l.head = node
 			} else {
-				// вставка в середину
 				node.prev = current.prev
 				node.next = current
 				current.prev.next = node
@@ -69,7 +67,6 @@ func (l *OrderedList[T]) Add(item T) {
 		current = current.next
 	}
 
-	// вставка в хвост
 	node.prev = l.tail
 	l.tail.next = node
 	l.tail = node
