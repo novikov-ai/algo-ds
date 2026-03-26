@@ -3,6 +3,7 @@ package main
 import (
 	"constraints"
 	"os"
+	"errors"
 )
 
 type Node[T constraints.Ordered] struct {
