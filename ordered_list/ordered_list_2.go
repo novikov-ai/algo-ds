@@ -4,13 +4,38 @@ package main
 #7. Упорядоченный список
 #6 Регулярная задача
 Переделайте функцию поиска с учётом признака упорядоченности и возможности раннего прерывания поиска,
-если найден заведомо больший или меньший элемент, нежели искомый (то есть значение по сути не найдено). Оцените сложность операции поиска, изменилась ли она?
-
-WIP
+если найден заведомо больший или меньший элемент, нежели искомый.
 
 Рефлексия к задаче:
-	WIP
+	Сложность операции в худшем случае не изменилась, также O(n), но в лучшем случае получаем теперь O(1).
 */
+
+func (l *OrderedList[T]) FindWithInterruption(n T) (Node[T], error) {
+	if l.head == nil {
+		return Node[T]{}, errors.New("not found")
+	}
+
+	current := l.head
+	for current != nil {
+		if current.value == n {
+			return *current, nil
+		}
+
+		if l._ascending {
+			if current.value > n {
+				return Node[T]{}, errors.New("not found")
+			}
+		} else {
+			if current.value < n {
+				return Node[T]{}, errors.New("not found")
+			}
+		}
+
+		current = current.next
+	}
+
+	return Node[T]{}, errors.New("not found")
+}
 
 /* META
 #7. Упорядоченный список
