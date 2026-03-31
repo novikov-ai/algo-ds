@@ -93,18 +93,21 @@ func (l *OrderedList[T]) Delete(n T) {
 	current := l.head
 	for current != nil {
 		if current.value == n {
+			if current.prev == nil && current.next == nil {
+				l.head = nil
+				l.tail = nil
+				return
+			}
 			if current.prev == nil {
 				l.head = current.next
-				if l.head != nil {
-					l.head.prev = nil
-				}
+				l.head.prev = nil
+
 				return
 			}
 			if current.next == nil {
 				l.tail = current.prev
-				if l.tail != nil {
-					l.tail.next = nil
-				}
+				l.tail.next = nil
+
 				return
 			}
 			current.prev.next = current.next
