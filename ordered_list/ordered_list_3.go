@@ -66,11 +66,13 @@ func Test_Add(t *testing.T) {
 
 func Test_Delete(t *testing.T) {
 	tests := []struct {
-		name      string
-		ascending bool
-		initial   []int
-		delete    int
-		expected  []int
+		name          string
+		ascending     bool
+		initial       []int
+		delete        int
+		expected      []int
+		expectNilHead bool
+		expectNilTail bool
 	}{
 		{
 			name:      "ascending delete head",
@@ -94,11 +96,13 @@ func Test_Delete(t *testing.T) {
 			expected:  []int{1, 3},
 		},
 		{
-			name:      "ascending delete only element",
-			ascending: true,
-			initial:   []int{1},
-			delete:    1,
-			expected:  []int{},
+			name:          "ascending delete only element",
+			ascending:     true,
+			initial:       []int{1},
+			delete:        1,
+			expected:      []int{},
+			expectNilHead: true,
+			expectNilTail: true,
 		},
 		{
 			name:      "ascending delete missing",
@@ -128,6 +132,36 @@ func Test_Delete(t *testing.T) {
 			delete:    1,
 			expected:  []int{3, 2},
 		},
+		{
+			name:      "descending delete middle",
+			ascending: false,
+			initial:   []int{3, 2, 1},
+			delete:    2,
+			expected:  []int{3, 1},
+		},
+		{
+			name:      "descending delete missing",
+			ascending: false,
+			initial:   []int{3, 2, 1},
+			delete:    9,
+			expected:  []int{3, 2, 1},
+		},
+		{
+			name:      "descending delete first duplicate",
+			ascending: false,
+			initial:   []int{3, 2, 2},
+			delete:    2,
+			expected:  []int{3, 2},
+		},
+		{
+			name:          "delete from empty list",
+			ascending:     true,
+			initial:       []int{},
+			delete:        1,
+			expected:      []int{},
+			expectNilHead: true,
+			expectNilTail: true,
+		},
 	}
 
 	for _, tc := range tests {
@@ -140,6 +174,13 @@ func Test_Delete(t *testing.T) {
 			l.Delete(tc.delete)
 			got := toSlice(l)
 			assert.Equal(t, tc.expected, got)
+
+			if tc.expectNilHead {
+				assert.Nil(t, l.head)
+			}
+			if tc.expectNilTail {
+				assert.Nil(t, l.tail)
+			}
 		})
 	}
 }
