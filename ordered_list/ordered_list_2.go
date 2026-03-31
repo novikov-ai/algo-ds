@@ -42,11 +42,26 @@ func (l *OrderedList[T]) FindWithInterruption(n T) (Node[T], error) {
 #8 Дополнительная задача
 Добавьте метод удаления всех дубликатов из упорядоченного списка.
 
-WIP
-
 Рефлексия к задаче:
-	WIP
+	Сложность алгоритма O(n), необходимо полностью пройтись по списку.
 */
+
+func (l *OrderedList[T]) RemoveDuplicates() {
+	current := l.head
+	for current != nil && current.next != nil {
+		if current.value == current.next.value {
+			dup := current.next
+			current.next = dup.next
+			if dup.next != nil {
+				dup.next.prev = current
+			} else {
+				l.tail = current
+			}
+		} else {
+			current = current.next
+		}
+	}
+}
 
 /* META
 #7. Упорядоченный список
