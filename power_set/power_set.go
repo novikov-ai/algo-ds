@@ -56,7 +56,11 @@ func (ps *PowerSet[T]) Intersection(set2 PowerSet[T]) PowerSet[T] {
 }
 
 func (ps *PowerSet[T]) Union(set2 PowerSet[T]) PowerSet[T] {
-	var result PowerSet[T] = *ps
+	result := Init[T]()
+
+	for k := range ps.values {
+		result.values[k] = ""
+	}
 
 	for k := range set2.values {
 		result.values[k] = ""
